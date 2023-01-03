@@ -1,26 +1,102 @@
 import { configureStore } from '@reduxjs/toolkit';
-import {
-  persistStore,
-  FLUSH,
-  REHYDRATE,
-  PAUSE,
-  PERSIST,
-  PURGE,
-  REGISTER,
-} from 'redux-persist';
-import { persistedContactsReducer } from './slice';
+import { filterReduser } from './filterSlice';
+import { contactsApi } from './contactsSlice';
+import { setupListeners } from '@reduxjs/toolkit/query';
 
 export const store = configureStore({
   reducer: {
-    contacts: persistedContactsReducer,
+    filter: filterReduser,
+    [contactsApi.reducerPath]: contactsApi.reducer,
   },
-  middleware: getDefaultMiddleware =>
-    getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-      },
-    }),
+  middleware: getDefaultMiddleware => [
+    ...getDefaultMiddleware(),
+    contactsApi.middleware,
+  ],
 });
 
+setupListeners(store.dispatch);
 
-export const persistor = persistStore(store);
+
+
+
+
+
+// import { useState } from 'react';
+// import './ContactForm.module.css';
+// // import {toast} from 'react-hot-toast'
+// import {
+//   useGetContactsQuery,
+//   useAddContactMutation,
+// } from '../../redux/contactsSlice';
+
+// export const ContactForm = () => {
+//   const [name, setName] = useState('');
+//   const [phone, setNumber] = useState('');
+
+//   const { data: contacts} = useGetContactsQuery();
+//   const [addContact] = useAddContactMutation();
+
+//   const handleChange = event => {
+//     const { name, value } = event.target;
+//     switch (name) {
+//       case 'name':
+//         setName(value);
+//         break;
+//       case 'number':
+//         setNumber(value);
+//         break;
+//       default:
+//         break;
+//     }
+//   };
+
+//   const handleSubmit = async event => {
+//     event.preventDefault();
+//     const contact = {
+//       name,
+//       phone,
+//     };
+
+//     const enterContacts = contacts.some(
+//       contact =>
+//         (contact.name === name.toLowerCase() && contact.phone === phone) ||
+//         contact.phone === phone
+//     );
+
+//     enterContacts
+//       ? alert(`${name} or ${phone} is already in contacts`)
+//       : addContact(contact);
+    
+//     // toast.success('Заметка создана');
+//     setName('');
+//     setNumber('');
+//   };
+
+//   return (
+//     <form onSubmit={handleSubmit}>
+//       <input
+//         type="text"
+//         name="name"
+//         value={name}
+//         onChange={handleChange}
+//         placeholder="Name"
+//         pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
+//         title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
+//         required
+//       />
+//       <input
+//         type="tel"
+//         name="number"
+//         value={phone}
+//         onChange={handleChange}
+//         placeholder="number"
+//         pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
+//         title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
+//         required
+//       />
+//       <button type="submit">Add contact</button>
+//     </form>
+//   );
+// };
+
+

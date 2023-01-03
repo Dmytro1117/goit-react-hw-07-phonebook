@@ -1,18 +1,18 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import './ContactForm.module.css';
-import { nanoid } from 'nanoid';
+import {
+  useGetContactsQuery,
+  useAddContactMutation,
+} from '../../redux/contactsSlice';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
-import { useDispatch, useSelector } from 'react-redux';
-import { getContacts, addContact } from '../../redux/slice';
-
 
 
 export const ContactForm = () => {
-  const [number, setNumber] = useState('')
+  const [phone, setNumber] = useState('')
   const [name, setName] = useState('')
-  const contacts = useSelector(getContacts);
-  const dispatch = useDispatch();
+   const { data: contacts } = useGetContactsQuery();
+  const [addContact] = useAddContactMutation();
   
  const handlerChange = (e) => {
     const {name, value} = e.currentTarget
@@ -31,15 +31,15 @@ export const ContactForm = () => {
   const handlerFromForm = (e) => {
      e.preventDefault();
     const contact = {
-      id: nanoid(),
       name,
-      number,
+      phone,
     };
 
-    contacts.some(num => num.name === contact.name.toLowerCase() || num.number === contact.number)
-      ? Notify.info(`${name} or ${number} is already in contacts`)
-      : dispatch(addContact({contact}));
-  
+    contacts.some(num => num.name === contact.name.toLowerCase() || num.phone === contact.phone)
+      ? Notify.info(`${name} or ${phone} is already in contacts`)
+      : addContact(contact) && Notify.success(`${name} added in contacts`);
+    
+ 
     setNumber('')
     setName('')
   }
@@ -51,7 +51,7 @@ export const ContactForm = () => {
           <input
             placeholder="Number"
             onChange={handlerChange}
-            value={number}
+            value={phone}
             type="tel"
             name="number"
             pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
@@ -83,3 +83,6 @@ export const ContactForm = () => {
   number: PropTypes.number.isRequired,
   onSubmit: PropTypes.func.isRequired,
 };
+
+
+

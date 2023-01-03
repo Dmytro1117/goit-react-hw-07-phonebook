@@ -1,12 +1,17 @@
 import PropTypes from 'prop-types';
 import './ContactList.module.css';
-import { useDispatch, useSelector } from 'react-redux';
-import { getContacts, getFilter, deleteContact } from '../../redux/slice';
+import { useSelector } from 'react-redux';
+import { getFilter } from '../../redux/filterSlice';
+import {
+  useGetContactsQuery,
+  useDeleteContactMutation,
+} from '../../redux/contactsSlice';
 
 export const ContactList = () => {
 
-const dispatch = useDispatch();
-  const contacts = useSelector(getContacts);
+  const { data: contacts } = useGetContactsQuery();
+  const [deleteContact, { isLoading }] = useDeleteContactMutation();
+ 
   const filter = useSelector(getFilter);
 
   const filtrContacts = () => {
@@ -16,20 +21,23 @@ const dispatch = useDispatch();
   };
 
   return (
+  <>
+    { contacts && (
     <ul>
-      {filtrContacts().map(({ id, name, number }) => {
+      {filtrContacts().map(({ id, name, phone }) => {
         return (
           <li key={id}>
             <p>
-              {name}: {number}
+              {name}: {phone}
             </p>
-             <button type="button" onClick={() => dispatch(deleteContact({id}))}>
-              Delete
+            <button type="button" onClick={() => deleteContact(id)}>
+              {isLoading ? 'Vaiting' : 'Delete'}
             </button>
           </li>
         );
       })}
-    </ul>
+        </ul>)}
+      </>
   );
 }
 
