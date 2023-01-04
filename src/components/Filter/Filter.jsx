@@ -21,7 +21,6 @@ export const Filter = () => {
   
 };
 
-
 Filter.propTypes = {
   text: PropTypes.string,
   filterInput: PropTypes.func,

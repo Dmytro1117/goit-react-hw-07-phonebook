@@ -4,15 +4,14 @@ import { useSelector } from 'react-redux';
 import { getFilter } from '../../redux/filterSlice';
 import {
   useGetContactsQuery,
-  useDeleteContactMutation,
-} from '../../redux/contactsSlice';
+ } from '../../redux/contactsSlice';
+import {ContactListItem} from './ContactListItem'
 
 export const ContactList = () => {
 
   const { data: contacts } = useGetContactsQuery();
-  const [deleteContact, { isLoading }] = useDeleteContactMutation();
- 
-  const filter = useSelector(getFilter);
+  
+   const filter = useSelector(getFilter);
 
   const filtrContacts = () => {
     return contacts.filter(cont =>
@@ -26,14 +25,7 @@ export const ContactList = () => {
     <ul>
       {filtrContacts().map(({ id, name, phone }) => {
         return (
-          <li key={id}>
-            <p>
-              {name}: {phone}
-            </p>
-            <button type="button" onClick={() => deleteContact(id)}>
-              {isLoading ? 'Vaiting' : 'Delete'}
-            </button>
-          </li>
+          <ContactListItem  key={id} name={name}  phone={phone} id={id}/>
         );
       })}
         </ul>)}
