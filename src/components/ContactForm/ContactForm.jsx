@@ -28,7 +28,7 @@ export const ContactForm = () => {
     }
  }
   
-  const handlerFromForm = (e) => {
+  const handlerOnSubmit = (e) => {
      e.preventDefault();
     const contact = {
       name,
@@ -47,7 +47,7 @@ export const ContactForm = () => {
 
     return (
       <>
-        <form onSubmit={handlerFromForm}>
+        <form onSubmit={handlerOnSubmit}>
           <input
             placeholder="Number"
             onChange={handlerChange}
